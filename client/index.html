@@ -12,12 +12,17 @@
 <body>
   <div id="app">
     <div id="chat_container"></div>
-      <form>
-        <textarea name="prompt" rows="4" cols="1" placeholder="Ask anything..."></textarea>
-        <button type="submit">
-          <img src="assets/send.svg" alt="send message">
+    <form>
+      <div class="input-container">
+        <textarea name="prompt" rows="4" cols="1" placeholder="Ask anything..." oninput="this.value = this.value"></textarea>
+        <button type="button" id="microphone">
+          <img src="assets/microphone.svg" alt="microphone">
         </button>
-      </form>
+      </div>
+      <button type="submit" id="submit-button" disabled>
+        <img src="assets/send.svg" alt="send message">
+      </button>
+    </form>
   </div>
   <script type="module" src="/script.js"></script>
 </body>
