@@ -129,6 +129,11 @@ const handleSubmit = async (e) => {
 }
 
 /**
+ * add event listeners and callback functions
+ */
+
+
+/**
  * add event listners and callback functions in enterkey pressed
  */
 form.addEventListener('submit', handleSubmit);
