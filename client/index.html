@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coding AI</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-  <div id="app">
-    <div id="chat_container"></div>
-    <form>
-      <div class="input-container">
-        <textarea name="prompt" rows="4" cols="1" placeholder="Ask anything..." oninput="this.value = this.value"></textarea>
-        <button type="button" id="microphone">
-          <img src="assets/microphone.svg" alt="microphone">
-        </button>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coding AI</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Coding AI Chatbot</h1>
+      <div id="chat_container"></div>
+      <div>
+        <button id="speech_button">Start recognition</button>
+        <button id="send_button">Send message</button>
       </div>
-      <button type="submit" id="submit-button" disabled>
-        <img src="assets/send.svg" alt="send message">
-      </button>
-    </form>
-  </div>
-  <script type="module" src="/script.js"></script>
-</body>
-
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.939.0.min.js"></script>
+    <script src="/script.js"></script>
+  </body>
 </html>
