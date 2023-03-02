@@ -1,144 +1,69 @@
-import bot from "./assets/bot.svg";
-import user from "./assets/user.svg";
+import React, { useState } from "react";
+import axios from "axios";
 
-const form = document.querySelector('form');
-const chatContainer = document.querySelector('#chat_container');
-// const serverApi = "http://localhost:5000/";
 const serverApi = "https://openai-207p.onrender.com/";
 
-let loadInterval;
+const Chatbot = () => {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-/**
- * This will show ... as a loading animation when processing
- * @param {object} element 
- */
-function loader(element) {
-  element.textContent = '';
+  const handleSpeechRecognition = () => {
+    // rozpoczęcie rozpoznawania mowy
+    // przekazanie rozpoznanego tekstu do chatbota
+  };
 
-  //every 300ms  it will add '.'
-  loadInterval = setInterval(() => {
-    element.textContent += '.';
+  const handleSendMessage = async (text) => {
+    setMessages([...messages, { text, sender: "user" }]);
+    setLoading(true);
 
-    //resetting textContent
-    if (element.textContent === '....') {
-      element.textContent = '';
+    try {
+      const response = await axios.post(serverApi, {
+        prompt: text,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const botMessage = data.bot.trim();
+        setMessages([...messages, { text: botMessage, sender: "bot" }]);
+      }
+    } catch (err) {
+      setError("Something went wrong!");
+      console.log(err);
     }
-  }, 300);
-}
 
-/**
- * When Ai has an answer answer will write letter by letter
- * @param {object} elemet 
- * @param {string} text 
- */
-function typeText(elemet, text) {
-  let index = 0;
+    setLoading(false);
+  };
 
-  let interval = setInterval(() => {
-    if (index < text.length) {
-      elemet.innerHTML += text.charAt(index);
-      index++;
-    } else {
-      clearInterval(interval);
-    }
-  }, 20);
-}
+  const handleSpeechSynthesis = (text) => {
+    // syntezowanie mowy i odtwarzanie dźwięku
+  };
 
-/**
- * Will generate unique ID for question
- * @returns unique id string
- */
-function generateUniqueId() {
-  const timeStamp = Date.now();
-  const randomNumber = Math.random();
-  const hexadecimalString = randomNumber.toString(16);
-
-  return `id-${timeStamp}-${hexadecimalString}`
-}
-
-/**
- * Generate chat line among bot and user
- * @param {boolean} isAi 
- * @param {string} value 
- * @param {string} uniqueId 
- * @returns template string of code
- */
-function chatStripe(isAi, value, uniqueId) {
   return (
-    `
-      <div class="wrapper ${isAi && 'ai'}">
-        <div class="chat">
-          <div class="profile">
-            <img src="${isAi ? bot : user}" 
-              alt="${isAi ? 'bot' : 'user'}" />
+    <div>
+      <div id="chat_container">
+        {messages.map((message, index) => (
+          <div key={index} className={`wrapper ${message.sender}`}>
+            <div className="chat">
+              <div className="profile">
+                <img
+                  src={message.sender === "bot" ? bot : user}
+                  alt={message.sender === "bot" ? "bot" : "user"}
+                />
+              </div>
+              <div className="message">{message.text}</div>
+            </div>
           </div>
-          <div class="message" id=${uniqueId}>${value}</div>
-        </div>
+        ))}
       </div>
-    `
-  )
-}
+      <div>
+        <button onClick={handleSpeechRecognition}>Start recognition</button>
+        <button onClick={() => handleSendMessage("Hello, bot!")}>
+          Send message
+        </button>
+      </div>
+    </div>
+  );
+};
 
-/**
- * When submit button
- * @param {event} e 
- */
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const data = new FormData(form);
-
-  //User's chat stripe
-  chatContainer.innerHTML += chatStripe(false, data.get('prompt'));
-  form.reset();
-
-  //BotChat stripe
-  const uniqueId = generateUniqueId();
-  chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-
-  const messageDiv = document.getElementById(uniqueId);
-
-  loader(messageDiv);
-
-  //Fetch data from server
-  const response = await fetch(serverApi, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      prompt: data.get('prompt')
-    }),
-  })
-
-  //Clear interval and add empty string to message div
-  clearInterval(loadInterval);
-  messageDiv.innerHTML = '';
-
-  if (response.ok) {
-    const data = await response.json();
-    const parsedData = data.bot.trim();
-
-    typeText(messageDiv, parsedData);
-  } else {
-    const err = response.text();
-    messageDiv.innerHTML = "Something went wrong!";
-    console.log(err);
-  }
-}
-
-/**
- * add event listeners and callback functions
- */
-
-
-/**
- * add event listners and callback functions in enterkey pressed
- */
-form.addEventListener('submit', handleSubmit);
-form.addEventListener('keyup', (e) => {
-  if (e.keyCode === 13 && !e.shiftKey) {
-    handleSubmit(e);
-  }
-})
+export default Chatbot;
